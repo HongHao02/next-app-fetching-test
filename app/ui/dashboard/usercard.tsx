@@ -4,31 +4,33 @@ import Image from "next/image";
 import React from "react";
 import { poppins } from "../fonts";
 export class FetchError extends Error {
-    cause?: unknown;
-  
-    constructor(message: string, cause?: unknown) {
-      super(message);
-      this.name = "FetchError";
-      this.cause = cause;
-    }
+  cause?: unknown;
+
+  constructor(message: string, cause?: unknown) {
+    super(message);
+    this.name = "FetchError";
+    this.cause = cause;
   }
-  
+}
+
 async function getUser() {
   try {
-    const res = await fetch("https://reqres.in/api/users?page=2", {
+    const res = await fetch("https://reqres.in/api/users?page=1", {
       next: { revalidate: 3600 },
     });
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
+    const data = await res.json();
+    console.log("results ", data);
 
-    return res.json();
+    return data;
   } catch (error) {
     if (error instanceof Error) {
       console.log("error ", error);
       throw new Error(`Failed to fetch list users - ${error.cause}`, {
-        cause: error.cause
+        cause: error.cause,
       });
     } else {
       throw new Error("An unknown error occurred");
